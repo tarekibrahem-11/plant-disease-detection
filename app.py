@@ -63,15 +63,23 @@ MODEL_PATH = "model/EfficientNetB1-plants-99.47.h5"
 CLASS_MAPPING_PATH = "model/plants-15.txt"
 
 # Gemini AI Configuration
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDkavow3O7bTGle7xG5F67RFLDTGhDqAA0")
-genai.configure(api_key=GEMINI_API_KEY)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
 
 # Check if Gemini is properly configured
 try:
-    gemini_model = genai.GenerativeModel("gemini-1.5-pro")
-    gemini_available = True
-    print("✓ Gemini AI configured successfully")
+    if GEMINI_API_KEY:
+        gemini_model = genai.GenerativeModel("gemini-1.5-pro")
+        gemini_available = True
+        print("✓ Gemini AI configured successfully")
+    else:
+        gemini_model = None
+        gemini_available = False
+        print("⚠ Gemini API key not configured")
 except Exception as e:
+    gemini_model = None
     gemini_available = False
     print(f"✗ Error configuring Gemini AI: {e}")
 
@@ -165,7 +173,7 @@ def load_class_mappings(dict_path):
 
 def get_disease_info_from_gemini(disease_name):
     """Get information about a plant disease using Gemini AI"""
-    if not gemini_available or GEMINI_API_KEY == "your-gemini-api-key-here":
+    if not gemini_available or not GEMINI_API_KEY:
         return "API key not configured properly. Please add a valid Gemini API key to your .env file."
 
     try:
@@ -371,7 +379,7 @@ def predict():
 
                 # Get disease information from Gemini
                 ai_info = None
-                if GEMINI_API_KEY != "your-gemini-api-key-here":
+                if GEMINI_API_KEY:
                     try:
                         ai_info = get_disease_info_from_gemini(class_name)
                     except:
