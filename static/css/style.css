@@ -1,0 +1,422 @@
+:root {
+    /* Light mode variables */
+    --bg-color: #f8f9fa;
+    --text-color: #333;
+    --primary-color: #2c7744;
+    --primary-hover: #1f5a31;
+    --card-bg: #ffffff;
+    --accent-bg: #e8f5e9;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.15);
+    --nav-bg: #2c7744;
+    --nav-text: rgba(255, 255, 255, 0.9);
+    --footer-bg: #2c7744;
+    --footer-text: white;
+    --section-bg: #f5f5f5;
+}
+
+/* Global styles */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease;
+}
+
+/* Remove glass effect for cards */
+.glass-card {
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 16px 0 var(--shadow-color);
+    background-color: var(--card-bg);
+}
+
+/* Fixed green header */
+.navbar {
+    background-color: #2c7744 !important;
+    box-shadow: 0 2px 10px var(--shadow-color);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 0;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    margin-right: auto;
+    color: white;
+    text-decoration: none;
+}
+
+.navbar-brand:hover {
+    color: white;
+    text-decoration: none;
+}
+
+/* Navigation links at right edge */
+.navbar-nav {
+    position: absolute;
+    right: 0;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin-left: 10px;
+}
+
+.nav-link {
+    padding: 8px 15px !important;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Cards */
+.card {
+    background-color: var(--card-bg);
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 0.5rem 1rem var(--shadow-color);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 2rem var(--shadow-color);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+/* Upload area */
+.upload-area {
+    border: 3px dashed var(--primary-color);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: var(--accent-bg);
+}
+
+.upload-area:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px var(--shadow-color);
+}
+
+.upload-area.dragover {
+    background-color: var(--accent-bg);
+    border-color: var(--primary-hover);
+}
+
+/* Footer */
+footer {
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+    padding: 1.5rem 0;
+}
+
+/* Hero section */
+.hero-section {
+    padding: 3rem 0;
+    background: linear-gradient(135deg, var(--accent-bg) 0%, rgba(241, 248, 233, 0.7) 100%);
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+/* Feature cards */
+.feature-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+    background-color: var(--card-bg);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+/* Loading animation */
+.loading-spinner {
+    border-top-color: var(--primary-color);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* Interactive hover effects */
+.interactive-hover {
+    transition: all 0.3s ease;
+}
+
+.interactive-hover:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px var(--shadow-color);
+}
+
+/* Pulse animation for buttons */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.btn-pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-hover);
+}
+
+/* Toast notifications */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.toast {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    margin-top: 10px;
+    transition: all 0.3s;
+    border: 1px solid var(--border-color);
+}
+
+/* Alert styles */
+.alert {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+/* Interactive elements */
+.interactive-element {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.interactive-element:hover {
+    filter: brightness(1.1);
+}
+
+/* Styles for disease information tabs */
+.disease-info-tabs {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.disease-info-card,
+.treatment-info-card {
+    padding: 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+/* Redesigned AI result content styling */
+.overview-section,
+.cause-section,
+.symptoms-section,
+.treatment-section,
+.prevention-section {
+    background-color: var(--section-bg);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-left: 3px solid var(--primary-color);
+    line-height: 1.6;
+}
+
+.section-title {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-weight: 500;
+    font-size: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.overview-section p,
+.cause-section p,
+.symptoms-section p,
+.treatment-section p,
+.prevention-section p {
+    margin-bottom: 10px;
+}
+
+.symptoms-section ul,
+.treatment-section ul,
+.prevention-section ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+/* Progress bar styling */
+.progress {
+    height: 30px;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    transition: width 0.6s ease;
+}
+
+/* Image preview enhancements */
+.image-preview-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-preview-overlay.active {
+    opacity: 1;
+}
+
+.image-preview-container {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.image-preview-close {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* New section cell styles */
+.info-cell {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.info-cell-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px 6px 0 0;
+    margin: -15px -15px 15px -15px;
+}
+
+.info-cell-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.info-cell-content {
+    line-height: 1.6;
+}
+
+/* Styling for the tabs */
+.nav-tabs {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-tabs .nav-link {
+    color: var(--text-color);
+    background-color: #f5f5f5;
+    border: 1px solid var(--border-color);
+    margin-right: 4px;
+    border-radius: 8px 8px 0 0;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: #e9ecef;
+    border-color: var(--border-color);
+}
+
+.nav-tabs .nav-link.active {
+    background-color: white;
+    color: var(--primary-color);
+    border-bottom-color: white;
+    font-weight: 500;
+} 

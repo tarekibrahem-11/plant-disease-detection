@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-body p-5">
+                <h2 class="card-title text-center mb-4">About Plant Disease Classifier</h2>
+
+                <div class="row mb-5">
+                    <div class="col-md-4 text-center">
+                        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo" class="img-fluid mb-3"
+                            style="max-width: 180px;">
+                        <h4 class="text-success">AI-Powered Plant Care</h4>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="lead">
+                            Plant Disease Classifier is an advanced tool that uses artificial intelligence to help
+                            gardeners, farmers, and plant enthusiasts identify diseases in their plants.
+                        </p>
+                        <p>
+                            Our system uses deep learning technology to recognize patterns in plant leaf images and
+                            identify diseases with high accuracy. By providing early detection, we help you take
+                            timely action to prevent crop loss and maintain plant health.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h3 class="border-bottom pb-2 mb-3">How It Works</h3>
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-4 mb-md-0">
+                                <div class="card h-100 border-success">
+                                    <div class="card-body">
+                                        <i class="fas fa-cloud-upload-alt fa-3x text-success mb-3"></i>
+                                        <h5>1. Upload Image</h5>
+                                        <p>Take a photo of the affected plant leaf and upload it to our system.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center mb-4 mb-md-0">
+                                <div class="card h-100 border-success">
+                                    <div class="card-body">
+                                        <i class="fas fa-robot fa-3x text-success mb-3"></i>
+                                        <h5>2. AI Analysis</h5>
+                                        <p>Our AI model analyzes the image and identifies the disease.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="card h-100 border-success">
+                                    <div class="card-body">
+                                        <i class="fas fa-clipboard-list fa-3x text-success mb-3"></i>
+                                        <h5>3. Get Results</h5>
+                                        <p>Receive detailed information about the disease and treatment options from
+                                            Gemini AI.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h3 class="border-bottom pb-2 mb-3">Technology Behind the System</h3>
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <i class="fas fa-brain text-success me-2"></i>
+                                        <strong>Deep Learning Model:</strong> EfficientNetB1 architecture trained on a
+                                        large dataset of plant leaf images
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="fas fa-chart-bar text-success me-2"></i>
+                                        <strong>Accuracy:</strong> 99.47% on test datasets
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="fas fa-language text-success me-2"></i>
+                                        <strong>Gemini AI Integration:</strong> For comprehensive disease information
+                                        and treatment recommendations
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="fas fa-flask text-success me-2"></i>
+                                        <strong>Backend:</strong> Flask with TensorFlow for real-time prediction
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6 text-center">
+                                <img src="{{ url_for('static', filename='img/tech.svg') }}"
+                                    alt="Technology illustration" class="img-fluid" style="max-height: 250px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <h3 class="border-bottom pb-2 mb-3">Supported Plants and Diseases</h3>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-success text-white">
+                                        Pepper
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Bacterial spot</li>
+                                        <li class="list-group-item">Healthy</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-success text-white">
+                                        Potato
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Early blight</li>
+                                        <li class="list-group-item">Late blight</li>
+                                        <li class="list-group-item">Healthy</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-success text-white">
+                                        Tomato
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Bacterial spot</li>
+                                        <li class="list-group-item">Early blight</li>
+                                        <li class="list-group-item">Late blight</li>
+                                        <li class="list-group-item">Leaf mold</li>
+                                        <li class="list-group-item">Septoria leaf spot</li>
+                                        <li class="list-group-item">Spider mites</li>
+                                        <li class="list-group-item">Target spot</li>
+                                        <li class="list-group-item">Yellow leaf curl virus</li>
+                                        <li class="list-group-item">Mosaic virus</li>
+                                        <li class="list-group-item">Healthy</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

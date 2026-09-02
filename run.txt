@@ -1,0 +1,2 @@
+cd .\plant_disease_model
+python app.py

@@ -1,0 +1,18 @@
+<svg width="80" height="80" viewBox="0 0 80 80"
+    xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .leaf {
+            fill: #2c7744;
+        }
+        .stem {
+            fill: #1f5a31;
+        }
+    </style>
+    <circle cx="40" cy="40" r="38" fill="#e8f5e9" stroke="#2c7744"
+        stroke-width="2" />
+    <path class="stem" d="M40 65 L40 40 Q40 30 40 28" stroke-width="3"
+        stroke-linecap="round" />
+    <path class="leaf" d="M40 40 Q55 30 60 40 Q55 50 40 40" />
+    <path class="leaf" d="M40 40 Q25 30 20 40 Q25 50 40 40" />
+    <path class="leaf" d="M40 40 Q50 25 40 20 Q30 25 40 40" />
+</svg>

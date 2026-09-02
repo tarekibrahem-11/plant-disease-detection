@@ -1,0 +1,648 @@
+{% extends "base.html" %}
+
+{% block title %}Results{% endblock %}
+
+{% block extra_css %}
+<style>
+    .disease-info {
+        margin-top: 2rem;
+        border-top: 1px solid var(--border-color);
+        padding-top: 2rem;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 2rem;
+        height: 2rem;
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top-color: var(--primary-color);
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .info-section {
+        transition: all 0.3s ease;
+    }
+
+    .info-section:hover {
+        transform: translateY(-5px);
+    }
+
+    .scientific-name {
+        font-style: italic;
+        color: #336633;
+        font-weight: 500;
+    }
+
+    .image-container {
+        position: relative;
+        margin-bottom: 15px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 10px;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .image-container:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-image {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        max-height: 400px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .result-image:hover {
+        transform: scale(1.03);
+    }
+
+    .image-caption {
+        background-color: rgba(53, 120, 78, 0.8);
+        color: white;
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        opacity: 0.9;
+        transition: all 0.3s ease;
+    }
+
+    .image-container:hover .image-caption {
+        opacity: 1;
+        bottom: 20px;
+    }
+
+    /* Image preview overlay */
+    .image-preview-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+
+    .image-preview-overlay.active {
+        opacity: 1;
+    }
+
+    .image-preview-container {
+        position: relative;
+        max-width: 90%;
+        max-height: 90%;
+        animation: zoomIn 0.3s ease;
+    }
+
+    @keyframes zoomIn {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .image-preview {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .image-preview-close {
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #35784e;
+        color: white;
+        border: 2px solid white;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease;
+    }
+
+    .image-preview-close:hover {
+        background-color: #2a5f3e;
+        transform: scale(1.1);
+    }
+
+    .info-cell {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-cell-header {
+        background-color: #35784e;
+        color: white;
+        padding: 10px 15px;
+    }
+
+    .info-cell-title {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .info-cell-content {
+        padding: 15px;
+        background-color: white;
+    }
+
+    .info-cell-content ul {
+        margin-top: 0.5rem;
+        padding-left: 1.5rem;
+    }
+
+    .info-cell-content li {
+        margin-bottom: 0.5rem;
+    }
+
+    .numbered-list {
+        counter-reset: item;
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .numbered-list li {
+        counter-increment: item;
+        margin-bottom: 8px;
+        position: relative;
+        padding-left: 2rem;
+    }
+
+    .numbered-list li:before {
+        content: counter(item) ".";
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-weight: bold;
+        color: #35784e;
+    }
+
+    .nav-tabs .nav-link.active {
+        background-color: #35784e;
+        color: white;
+        border-color: #35784e;
+    }
+
+    .nav-tabs .nav-link {
+        color: #35784e;
+        border: 1px solid #dee2e6;
+    }
+
+    .tab-content {
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card result-card">
+            <div class="card-body p-4">
+                <h2 class="card-title text-center mb-4">Diagnosis Results</h2>
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="image-container">
+                            <img src="{{ url_for('uploaded_file', filename=result.image_path) }}"
+                                class="img-fluid rounded result-image" alt="Uploaded Plant Image">
+                            <div class="image-caption">
+                                <i class="fas fa-search-plus me-1"></i> Click to enlarge
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h4 class="mb-3">Analysis Results:</h4>
+
+                        <div class="mb-4 info-section p-3">
+                            <h5>Detected Disease:</h5>
+                            <div
+                                class="alert {% if 'healthy' in result.class_name.lower() %}alert-success{% else %}alert-warning{% endif %}">
+                                <h3 class="mb-0">{{ result.class_name }}</h3>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 info-section p-3">
+                            <h5>Confidence Level:</h5>
+                            <div class="progress mb-2" style="height: 30px;">
+                                <div class="progress-bar 
+                                    {% if result.probability >= 90 %}bg-success{% elif result.probability >= 70 %}bg-warning{% else %}bg-danger{% endif %}"
+                                    role="progressbar" style="width: {{ result.probability }}%;"
+                                    aria-valuenow="{{ result.probability }}" aria-valuemin="0" aria-valuemax="100">
+                                    {{ result.probability }}%
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 info-section p-3">
+                            <h5>Analysis Details:</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-clock me-2"></i>Time: {{ result.timestamp }}</li>
+                                <li><i class="fas fa-robot me-2"></i>Model: EfficientNetB1</li>
+                                <li><i class="fas fa-chart-bar me-2"></i>Accuracy: 99.47%</li>
+                            </ul>
+                        </div>
+
+                        {% if 'healthy' not in result.class_name.lower() and not result.ai_info %}
+                        <div class="alert alert-info">
+                            <h5>Want More Information?</h5>
+                            <p>Click the button below to learn more about this disease, its causes, and treatment
+                                methods.</p>
+                            <button class="btn btn-primary get-disease-info" data-disease="{{ result.class_name }}"
+                                data-result-id="{{ result.id }}">
+                                <i class="fas fa-info-circle me-2"></i>Get Detailed Information
+                            </button>
+                        </div>
+                        {% elif 'healthy' in result.class_name.lower() and not result.ai_info %}
+                        <div class="alert alert-success">
+                            <h5>Good News!</h5>
+                            <p>Your plant appears to be healthy. Continue with your current care routine.</p>
+                            <button class="btn btn-primary get-disease-info" data-disease="{{ result.class_name }}"
+                                data-result-id="{{ result.id }}">
+                                <i class="fas fa-info-circle me-2"></i>Get Plant Health Tips
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="disease-info mt-4 p-4 {% if not result.ai_info %}d-none{% endif %}" id="diseaseInfo">
+                    <h3 class="mb-3"><i class="fas fa-leaf me-2"></i>Disease Information & Treatment</h3>
+                    <div id="diseaseInfoContent" class="bg-light p-0 rounded">
+                        {% if result.ai_info %}
+                        <div class="disease-info-tabs">
+                            <ul class="nav nav-tabs" id="diseaseInfoTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="info-tab" data-bs-toggle="tab"
+                                        data-bs-target="#info" type="button" role="tab" aria-controls="info"
+                                        aria-selected="true">
+                                        <i class="fas fa-info-circle me-2"></i>Disease Information
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="treatment-tab" data-bs-toggle="tab"
+                                        data-bs-target="#treatment" type="button" role="tab" aria-controls="treatment"
+                                        aria-selected="false">
+                                        <i class="fas fa-medkit me-2"></i>Treatment & Prevention
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content p-4" id="diseaseInfoTabContent">
+                                <div class="tab-pane fade show active" id="info" role="tabpanel"
+                                    aria-labelledby="info-tab">
+                                    <div id="infoSections">
+                                        <!-- Info sections will be rendered here -->
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="treatment" role="tabpanel"
+                                    aria-labelledby="treatment-tab">
+                                    <div id="treatmentSections">
+                                        <!-- Treatment sections will be rendered here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-none" id="rawDiseaseInfo">
+                            {{ result.ai_info|safe }}
+                        </div>
+                        {% else %}
+                        <div class="text-center p-5">
+                            <div class="loading-spinner mb-3"></div>
+                            <p>Loading disease information...</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="text-center mt-5">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-arrow-right me-2"></i>Analyze Another Image
+                    </a>
+
+                    {% if from_history %}
+                    <a href="{{ url_for('history') }}" class="btn btn-secondary btn-lg ms-2">
+                        <i class="fas fa-history me-2"></i>Back to History
+                    </a>
+
+                    <form method="post" action="{{ url_for('delete_history_item', item_id=result.id) }}"
+                        class="d-inline" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                        <button type="submit" class="btn btn-danger btn-lg ms-2">
+                            <i class="fas fa-trash-alt me-2"></i>Delete Record
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add image preview functionality
+        const resultImage = document.querySelector('.result-image');
+        if (resultImage) {
+            resultImage.addEventListener('click', function () {
+                createImagePreview(this.src);
+            });
+        }
+
+        // Parse AI content if available
+        if (document.getElementById('rawDiseaseInfo')) {
+            parseAIContent();
+        }
+
+        // Get disease info buttons
+        const getInfoButtons = document.querySelectorAll('.get-disease-info');
+
+        getInfoButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const diseaseName = this.getAttribute('data-disease');
+                const resultId = this.getAttribute('data-result-id');
+                const diseaseInfo = document.getElementById('diseaseInfo');
+                const diseaseInfoContent = document.getElementById('diseaseInfoContent');
+
+                // Show loading state
+                diseaseInfo.classList.remove('d-none');
+                diseaseInfoContent.innerHTML = `
+                    <div class="text-center p-5">
+                        <div class="loading-spinner mb-3"></div>
+                        <p>Loading disease information...</p>
+                    </div>
+                `;
+
+                // Add loading state to button
+                this.disabled = true;
+
+                // Make API request
+                fetch('/api/get_disease_info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        disease_name: diseaseName,
+                        result_id: resultId
+                    }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Create the tabbed interface
+                        diseaseInfoContent.innerHTML = `
+                        <div class="disease-info-tabs">
+                            <ul class="nav nav-tabs" id="diseaseInfoTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="info-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#info" type="button" role="tab" 
+                                        aria-controls="info" aria-selected="true">
+                                        <i class="fas fa-info-circle me-2"></i>Disease Information
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="treatment-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#treatment" type="button" role="tab" 
+                                        aria-controls="treatment" aria-selected="false">
+                                        <i class="fas fa-medkit me-2"></i>Treatment & Prevention
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content p-4" id="diseaseInfoTabContent">
+                                <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                                    <div id="infoSections">
+                                        <!-- Info sections will be rendered here -->
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="treatment" role="tabpanel" aria-labelledby="treatment-tab">
+                                    <div id="treatmentSections">
+                                        <!-- Treatment sections will be rendered here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-none" id="rawDiseaseInfo">
+                            ${data.info}
+                        </div>
+                    `;
+
+                        // Parse AI content and populate tabs
+                        parseAIContent();
+
+                        // Hide the alerts
+                        const alerts = document.querySelectorAll('.alert-info, .alert-success');
+                        alerts.forEach(alert => {
+                            if (alert.querySelector('.get-disease-info')) {
+                                alert.style.display = 'none';
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        diseaseInfoContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <p>Sorry, we couldn't retrieve information about this disease at this time. Please try again later.</p>
+                    </div>
+                    `;
+                        // Re-enable the button
+                        this.disabled = false;
+                    });
+            });
+        });
+    });
+
+    // Parse AI content into tabs with clean cells
+    function parseAIContent() {
+        const rawContent = document.getElementById('rawDiseaseInfo').textContent.trim();
+
+        // Find sections in AI text
+        const overviewMatch = rawContent.match(/1\.\s*Overview:([^2]+)/s);
+        const causeMatch = rawContent.match(/2\.\s*Cause:([^3]+)/s);
+        const symptomsMatch = rawContent.match(/3\.\s*Symptoms:([^4]+)/s);
+        const treatmentMatch = rawContent.match(/4\.\s*Treatment:([^5]+)/s);
+        const preventionMatch = rawContent.match(/5\.\s*Prevention:([^$]+)/s);
+
+        // Information tab sections
+        let infoSectionsHTML = '';
+        if (overviewMatch && overviewMatch[1]) {
+            infoSectionsHTML += createInfoCell('Overview', cleanText(overviewMatch[1]));
+        }
+
+        if (causeMatch && causeMatch[1]) {
+            infoSectionsHTML += createInfoCell('Cause', cleanText(causeMatch[1]));
+        }
+
+        if (symptomsMatch && symptomsMatch[1]) {
+            infoSectionsHTML += createInfoCell('Symptoms', cleanText(symptomsMatch[1]));
+        }
+
+        // Treatment tab sections
+        let treatmentSectionsHTML = '';
+        if (treatmentMatch && treatmentMatch[1]) {
+            treatmentSectionsHTML += createInfoCell('Treatment', cleanText(treatmentMatch[1]));
+        }
+
+        if (preventionMatch && preventionMatch[1]) {
+            treatmentSectionsHTML += createInfoCell('Prevention', cleanText(preventionMatch[1]));
+        }
+
+        // Update the DOM
+        document.getElementById('infoSections').innerHTML = infoSectionsHTML;
+        document.getElementById('treatmentSections').innerHTML = treatmentSectionsHTML;
+    }
+
+    // Remove asterisks and clean the text
+    function cleanText(text) {
+        // Remove all asterisks 
+        let cleaned = text.replace(/\*/g, '');
+
+        // Handle scientific names - replace underscores with italic formatting
+        // Pattern matches _Word1 word2_ or similar scientific name patterns
+        cleaned = cleaned.replace(/_([A-Z][a-z]+ [a-z]+)_/g, '<em class="scientific-name">$1</em>');
+
+        // Handle any remaining underscores for emphasis
+        cleaned = cleaned.replace(/_([^_]+)_/g, '<em>$1</em>');
+
+        // Trim the text and replace multiple line breaks with single ones
+        cleaned = cleaned.trim().replace(/\n+/g, '\n');
+
+        // Check if it's a list with bullet points or dashes
+        const isList = cleaned.match(/(\n\s*[-•]\s+.*){2,}/s);
+
+        if (isList) {
+            // Convert bullet points to list items
+            cleaned = cleaned.replace(/\n\s*[-•]\s+(.*?)(?=\n|$)/g, '<li>$1</li>');
+
+            // Remove any extra spaces at beginning of lines
+            cleaned = cleaned.replace(/\n\s+(\w)/g, '\n$1');
+
+            // Convert to numbered list
+            if (cleaned.includes('<li>')) {
+                // Count the number of list items
+                const listItemCount = (cleaned.match(/<li>/g) || []).length;
+
+                if (listItemCount > 1) {
+                    // Replace with numbered list
+                    cleaned = cleaned.replace(/(<li>.*?<\/li>)+/gs, '<ol class="numbered-list">$&</ol>');
+                } else {
+                    // Single item, use unordered list
+                    cleaned = cleaned.replace(/(<li>.*?<\/li>)+/gs, '<ul>$&</ul>');
+                }
+            }
+        } else {
+            // For non-list text, wrap in paragraphs
+            cleaned = cleaned.split('\n')
+                .filter(line => line.trim().length > 0)
+                .map(line => `<p>${line}</p>`)
+                .join('');
+        }
+
+        return cleaned;
+    }
+
+    // Create an info cell with title and content
+    function createInfoCell(title, content) {
+        return `
+            <div class="info-cell mb-4">
+                <div class="info-cell-header">
+                    <h5 class="info-cell-title">${title}</h5>
+                </div>
+                <div class="info-cell-content">
+                    ${content}
+                </div>
+            </div>
+        `;
+    }
+
+    // Create image preview overlay
+    function createImagePreview(src) {
+        const overlay = document.createElement('div');
+        overlay.className = 'image-preview-overlay';
+
+        const imgContainer = document.createElement('div');
+        imgContainer.className = 'image-preview-container';
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = 'image-preview';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'image-preview-close';
+        closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        closeBtn.addEventListener('click', () => {
+            overlay.classList.remove('active');
+            setTimeout(() => overlay.remove(), 300);
+        });
+
+        imgContainer.appendChild(img);
+        imgContainer.appendChild(closeBtn);
+        overlay.appendChild(imgContainer);
+        document.body.appendChild(overlay);
+
+        // Add keyboard support for closing with Escape key
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                overlay.classList.remove('active');
+                setTimeout(() => {
+                    overlay.remove();
+                    document.removeEventListener('keydown', escHandler);
+                }, 300);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+
+        setTimeout(() => overlay.classList.add('active'), 10);
+
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) {
+                overlay.classList.remove('active');
+                setTimeout(() => {
+                    overlay.remove();
+                    document.removeEventListener('keydown', escHandler);
+                }, 300);
+            }
+        });
+    }
+</script>
+{% endblock %}
