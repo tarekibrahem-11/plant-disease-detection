@@ -55,18 +55,6 @@ A pretrained EfficientNetB1 model analyzes the uploaded plant leaf image and pre
 - Number of Classes: `15`
 - Reported Accuracy: `99.47%`
 
-### 2. Generative AI
-
-Google Gemini AI is used to provide additional information about the detected disease.
-
-The generated information includes:
-
-- Overview
-- Cause
-- Symptoms
-- Treatment
-- Prevention
-
 ---
 
 ## 🌿 Supported Classes
