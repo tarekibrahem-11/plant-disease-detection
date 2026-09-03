@@ -18,11 +18,7 @@ from werkzeug.utils import secure_filename
 import uuid
 from datetime import datetime
 import sqlite3
-import google.generativeai as genai
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
 
 warnings.filterwarnings("ignore")
 
@@ -62,26 +58,7 @@ IMG_SIZE = (224, 224)
 MODEL_PATH = "model/EfficientNetB1-plants-99.47.h5"
 CLASS_MAPPING_PATH = "model/plants-15.txt"
 
-# Gemini AI Configuration
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-
-# Check if Gemini is properly configured
-try:
-    if GEMINI_API_KEY:
-        gemini_model = genai.GenerativeModel("gemini-1.5-pro")
-        gemini_available = True
-        print("✓ Gemini AI configured successfully")
-    else:
-        gemini_model = None
-        gemini_available = False
-        print("⚠ Gemini API key not configured")
-except Exception as e:
-    gemini_model = None
-    gemini_available = False
-    print(f"✗ Error configuring Gemini AI: {e}")
 
 
 def custom_depthwise_conv2d(*args, **kwargs):
@@ -171,72 +148,6 @@ def load_class_mappings(dict_path):
         return {i: cls for i, cls in enumerate(default_classes)}
 
 
-def get_disease_info_from_gemini(disease_name):
-    """Get information about a plant disease using Gemini AI"""
-    if not gemini_available or not GEMINI_API_KEY:
-        return "API key not configured properly. Please add a valid Gemini API key to your .env file."
-
-    try:
-        # Format the disease name for better results
-        formatted_name = disease_name.replace("_", " ").replace("  ", " - ")
-
-        # Create the Gemini model with updated model name
-        model = genai.GenerativeModel("gemini-1.5-pro")
-
-        # Create the prompt
-        prompt = f"""
-        Provide comprehensive information about the plant disease "{formatted_name}" in the following structured format WITHOUT ANY ASTERISKS (*):
-        
-        1. Overview: A brief description of the disease
-        2. Cause: What causes this disease (pathogen, virus, etc.)
-        3. Symptoms: The key symptoms visible on the plant
-        4. Treatment: How to treat or manage the disease
-        5. Prevention: How to prevent the disease from occurring
-        
-        Format the information clearly with appropriate headers and concise points.
-        Do not include any asterisks in your response.
-        If this is a healthy plant, provide information about maintaining plant health.
-        Each section should be well-structured with informative bullet points where appropriate.
-        """
-
-        # Generate response with safety settings adjusted
-        safety_settings = [
-            {
-                "category": "HARM_CATEGORY_HARASSMENT",
-                "threshold": "BLOCK_NONE",
-            },
-            {
-                "category": "HARM_CATEGORY_HATE_SPEECH",
-                "threshold": "BLOCK_NONE",
-            },
-            {
-                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                "threshold": "BLOCK_NONE",
-            },
-            {
-                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-                "threshold": "BLOCK_NONE",
-            },
-        ]
-
-        generation_config = {
-            "temperature": 0.7,
-            "top_p": 0.8,
-            "top_k": 40,
-            "max_output_tokens": 1024,
-        }
-
-        response = model.generate_content(
-            prompt, safety_settings=safety_settings, generation_config=generation_config
-        )
-
-        # Clean up the response to ensure no asterisks
-        cleaned_response = response.text.replace("*", "")
-        return cleaned_response
-    except Exception as e:
-        print(f"Error getting disease info from Gemini: {e}")
-        return f"Error retrieving disease information: {str(e)}"
-
 
 class PlantDiseaseClassifier:
     def __init__(self, model_path, class_mapping_path):
@@ -325,29 +236,7 @@ def history_detail(item_id):
     return render_template("result.html", result=result, from_history=True)
 
 
-@app.route("/api/get_disease_info", methods=["POST"])
-def get_disease_info():
-    data = request.json
-    disease_name = data.get("disease_name")
-
-    if not disease_name:
-        return jsonify({"error": "Disease name is required"}), 400
-
-    info = get_disease_info_from_gemini(disease_name)
-
-    # Update the database with the new info
-    if "result_id" in data:
-        conn = sqlite3.connect("plant_disease.db")
-        c = conn.cursor()
-        c.execute(
-            "UPDATE history SET ai_info = ? WHERE id = ?", (info, data["result_id"])
-        )
-        conn.commit()
-        conn.close()
-
     return jsonify({"info": info})
-
-
 @app.route("/predict", methods=["POST"])
 def predict():
     if "file" not in request.files:
@@ -377,13 +266,8 @@ def predict():
                 # Format the class name for display
                 display_name = class_name.replace("_", " ").replace("  ", " - ")
 
-                # Get disease information from Gemini
                 ai_info = None
-                if GEMINI_API_KEY:
-                    try:
-                        ai_info = get_disease_info_from_gemini(class_name)
-                    except:
-                        ai_info = None
+                
 
                 # Save to database
                 conn = sqlite3.connect("plant_disease.db")
