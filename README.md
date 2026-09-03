@@ -1,105 +1,118 @@
-# Plant Disease Classification Model
+# 🌿 Plant Disease Detection
 
-This package contains a pre-trained EfficientNetB1 model for classifying plant diseases across 15 categories.
+An AI-powered web application for detecting plant diseases from leaf images using Deep Learning and Generative AI.
 
-## Installation
+The application uses a pretrained EfficientNetB1 model to classify plant leaf images into 15 different classes covering Pepper, Potato, and Tomato plants.
 
-1. Create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+After detecting the disease, Google Gemini AI provides additional information about the detected condition, including symptoms, causes, treatment, and prevention.
 
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+---
 
-## Quick Start
+## ✨ Features
 
-```python
-from predict import PlantDiseaseClassifier
+- 🌱 Plant disease detection from leaf images
+- 🧠 EfficientNetB1 deep learning model
+- 🎯 15 plant disease and healthy classes
+- 📊 Prediction confidence score
+- 🤖 Google Gemini AI integration
+- 🩺 AI-generated disease information
+- 💊 Treatment and management recommendations
+- 🛡️ Disease prevention information
+- 📜 Prediction history
+- 🔎 View previous prediction details
+- 🗑️ Delete individual history records
+- 🧹 Clear prediction history
+- 🌐 Flask web application
+- 🗄️ SQLite database
+- 📸 Image upload validation
 
-# Initialize classifier
-classifier = PlantDiseaseClassifier(
-    model_path='model/EfficientNetB1-plants-99.47.h5',
-    class_mapping_path='model/plants-15.txt'
-)
+---
 
-# Single image prediction
-class_name, probability = classifier.predict('path/to/image.jpg')
-print(f"Disease: {class_name} ({probability:.2f}%)")
+## 🖥️ Application Preview
 
-# Batch prediction
-results = classifier.predict_batch(['img1.jpg', 'img2.jpg'])
-for result in results:
-    print(f"{result['file']}: {result['class']} ({result['probability']:.2f}%)")
-```
+The application provides a simple web interface where users can upload a plant leaf image and receive an AI-powered diagnosis.
 
-## Model Information
+### Home Page
+
+![Plant Disease Detection](screenshots/home.png)
+
+---
+
+## 🧠 AI Architecture
+
+The application combines two AI components.
+
+### 1. Deep Learning Classification
+
+A pretrained EfficientNetB1 model analyzes the uploaded plant leaf image and predicts the most likely class.
+
+**Model Specifications:**
 
 - Architecture: EfficientNetB1
-- Input size: 224x224x3
-- Number of classes: 15
-- Training framework: TensorFlow/Keras
+- Framework: TensorFlow / Keras
+- Input Size: `224 × 224 × 3`
+- Number of Classes: `15`
+- Reported Accuracy: `99.47%`
 
-## Preprocessing Details
+### 2. Generative AI
 
-The model expects:
-- RGB images
-- Size: 224x224 pixels
-- No normalization (EfficientNet handles this internally)
-- Images are automatically resized if needed
+Google Gemini AI is used to provide additional information about the detected disease.
 
-## Classes
+The generated information includes:
 
-The model can classify the following plant diseases:
+- Overview
+- Cause
+- Symptoms
+- Treatment
+- Prevention
 
-**Pepper:**
-- Pepper__bell___Bacterial_spot
-- Pepper__bell___healthy
+---
 
-**Potato:**
-- Potato___Early_blight
-- Potato___Late_blight
-- Potato___healthy
+## 🌿 Supported Classes
 
-**Tomato:**
-- Tomato__Target_Spot
-- Tomato__Tomato_YellowLeaf__Curl_Virus
-- Tomato__Tomato_mosaic_virus
-- Tomato_Bacterial_spot
-- Tomato_Early_blight
-- Tomato_Late_blight
-- Tomato_Leaf_Mold
-- Tomato_Septoria_leaf_spot
-- Tomato_Spider_mites_Two_spotted_spider_mite
-- Tomato_healthy
+### 🌶️ Pepper
 
-## API Reference
+- `Pepper__bell___Bacterial_spot`
+- `Pepper__bell___healthy`
 
-### PlantDiseaseClassifier
+### 🥔 Potato
 
-#### `__init__(model_path, class_mapping_path)`
-Initialize the classifier with paths to the model and class mapping files.
+- `Potato___Early_blight`
+- `Potato___Late_blight`
+- `Potato___healthy`
 
-#### `predict(image_path)`
-Predict the disease class for a single image.
+### 🍅 Tomato
 
-**Returns:** `(class_name, probability)`
+- `Tomato__Target_Spot`
+- `Tomato__Tomato_YellowLeaf__Curl_Virus`
+- `Tomato__Tomato_mosaic_virus`
+- `Tomato_Bacterial_spot`
+- `Tomato_Early_blight`
+- `Tomato_Late_blight`
+- `Tomato_Leaf_Mold`
+- `Tomato_Septoria_leaf_spot`
+- `Tomato_Spider_mites_Two_spotted_spider_mite`
+- `Tomato_healthy`
 
-#### `predict_batch(image_paths)`
-Predict disease classes for multiple images.
+---
 
-**Returns:** List of dictionaries with keys: `file`, `class`, `probability`
+## 🔄 How It Works
 
-## Troubleshooting
-
-1. **ImportError:** Make sure all requirements are installed
-2. **FileNotFoundError:** Check that image paths are correct
-3. **Memory issues:** For large batches, process images in smaller chunks
-4. **GPU support:** Install `tensorflow-gpu` for GPU acceleration
-
-## License
-
-This model is provided for educational and research purposes.
+```text
+User uploads plant leaf image
+            ↓
+       Flask Web App
+            ↓
+    Image preprocessing
+            ↓
+    EfficientNetB1 Model
+            ↓
+     Disease prediction
+            ↓
+    Prediction confidence
+            ↓
+       Google Gemini
+            ↓
+Disease information & recommendations
+            ↓
+       SQLite History
