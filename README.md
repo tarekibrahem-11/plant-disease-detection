@@ -34,7 +34,8 @@ The application provides a simple web interface where users can upload a plant l
 
 ### Home Page
 
-![Plant Disease Detection](screenshots/home.png)
+![Plant Disease Detection](<img width="1919" height="918" alt="Screenshot 2026-09-02 191850" src="https://github.com/user-attachments/assets/8ff53ab7-b68e-4f3e-8760-1b5ce64a539f" />
+)
 
 ---
 
